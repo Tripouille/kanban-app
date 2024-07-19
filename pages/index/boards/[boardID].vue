@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { safeParse } from "valibot";
-import BoardColumn from "~/components/BoardColumn.vue";
+import BoardColumnComp from "~/components/BoardColumn.vue";
 import CreateBoardColumnInput from "~/components/CreateBoardColumnInput.vue";
-import { boardIDSchema } from "~/repositories/boardsRepository";
+import {
+  boardIDSchema,
+  createBoardColumnID,
+  type BoardColumn,
+  type BoardID,
+} from "~/repositories/boardsRepository";
 
 const route = useRoute();
 const id = route.params.boardID;
@@ -25,17 +30,26 @@ if (!success) {
 
 const boardsStore = useBoardsStore();
 const board = computed(() => boardsStore.boards.find((b) => b.id === boardID));
+
+function handleCreateBoardColumn(boardColumnName: BoardColumn["name"]) {
+  const BoardColumn: BoardColumn = {
+    id: createBoardColumnID(),
+    name: boardColumnName,
+    tasks: [],
+  };
+  boardsStore.createBoardColumn(boardID as BoardID, BoardColumn);
+}
 </script>
 
 <template>
   <section class="flex items-start gap-2">
-    <BoardColumn
+    <BoardColumnComp
       v-if="board"
       v-for="column in board.columns"
       :key="column.id"
       :column="column"
       :boardID="board.id"
     />
-    <CreateBoardColumnInput @create-board-column="console.log" />
+    <CreateBoardColumnInput @create-board-column="handleCreateBoardColumn" />
   </section>
 </template>

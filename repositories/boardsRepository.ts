@@ -1,3 +1,4 @@
+import { produce } from "immer";
 import * as v from "valibot";
 import { uuid } from "~/utils/uuid";
 
@@ -65,9 +66,10 @@ export type Boards = v.InferOutput<typeof boardsSchema>;
 
 export interface BoardsRepository {
   getBoards(): Promise<Board[]>;
+  createBoardColumn(boardID: BoardID, column: BoardColumn): Promise<void>;
 }
 
-const boards: Boards = v.parse(boardsSchema, [
+let boards: Boards = v.parse(boardsSchema, [
   {
     id: "b-cd8bf8f1-ab38-4287-b540-c61b4454eae2",
     name: "house work",
@@ -108,5 +110,12 @@ export const InMemoryBoardsRepository: BoardsRepository = {
   async getBoards() {
     console.log("🚀 ~ getBoards ~ getBoards:", boards);
     return boards;
+  },
+  async createBoardColumn(boardID, column) {
+    boards = produce<Boards>(boards, (draft) => {
+      const board = draft.find((board) => board.id === boardID);
+      if (!board) return;
+      board.columns.push(column);
+    });
   },
 };
