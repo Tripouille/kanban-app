@@ -67,7 +67,42 @@ export interface BoardsRepository {
   getBoards(): Promise<Board[]>;
 }
 
-const boards: Boards = [];
+const boards: Boards = v.parse(boardsSchema, [
+  {
+    id: "b-cd8bf8f1-ab38-4287-b540-c61b4454eae2",
+    name: "house work",
+    columns: [
+      {
+        id: "bc-87d96361-aff1-4a86-b5af-ece96ef5c5c2",
+        name: "todo",
+        tasks: [
+          {
+            id: "bt-f028b1d4-771c-4ce7-a5ad-04137d4a9d60",
+            name: "Clean the house",
+            description: "Use the vacum cleaner",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "b-34a6dfee-8089-41d7-b848-94c4df1ecc88",
+    name: "garden work",
+    columns: [
+      {
+        id: "bc-93808ebc-6017-4908-bfa9-ba3cde534d2e",
+        name: "todo",
+        tasks: [
+          {
+            id: "bt-bec2df98-daec-4298-ad8d-564baccf27d0",
+            name: "Clean the garden",
+            description: "Cut the grass",
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 export const InMemoryBoardsRepository: BoardsRepository = {
   async getBoards() {
