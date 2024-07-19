@@ -1,7 +1,5 @@
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
-    <h1>Kanban app</h1>
+  <h1 class="text-3xl font-bold underline">Kanban app</h1>
 </template>
