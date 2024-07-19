@@ -1,4 +1,4 @@
-import { produce } from "immer";
+import { cloneDeep } from "lodash-es";
 import * as v from "valibot";
 import { uuid } from "~/utils/uuid";
 
@@ -64,9 +64,28 @@ export type BoardID = v.InferOutput<typeof boardIDSchema>;
 export const boardsSchema = v.array(boardSchema);
 export type Boards = v.InferOutput<typeof boardsSchema>;
 
+export type MoveBoardTaskToColumn = {
+  type: "move-to-column";
+  fromColumnID: BoardColumnID;
+  fromTaskID: BoardTaskID;
+  toColumnID: BoardColumnID;
+};
+
+export type MoveBoardTaskOnTask = {
+  type: "move-task-on-task";
+  fromColumnID: BoardColumnID;
+  fromTaskID: BoardTaskID;
+  toColumnID: BoardColumnID;
+  toTaskID: BoardTaskID;
+  moveTaskBefore: boolean;
+};
+
+export type MoveBoardTaskParams = MoveBoardTaskToColumn | MoveBoardTaskOnTask;
+
 export interface BoardsRepository {
   getBoards(): Promise<Board[]>;
   createBoardColumn(boardID: BoardID, column: BoardColumn): Promise<void>;
+  moveBoardTask(params: MoveBoardTaskParams): Promise<void>;
 }
 
 let boards: Boards = v.parse(boardsSchema, [
@@ -125,13 +144,59 @@ let boards: Boards = v.parse(boardsSchema, [
 export const InMemoryBoardsRepository: BoardsRepository = {
   async getBoards() {
     console.log("🚀 ~ getBoards ~ getBoards:", boards);
-    return boards;
+    return cloneDeep(boards);
   },
   async createBoardColumn(boardID, column) {
-    boards = produce<Boards>(boards, (draft) => {
-      const board = draft.find((board) => board.id === boardID);
-      if (!board) return;
-      board.columns.push(column);
+    boards = boards.map((board) => {
+      if (board.id === boardID) {
+        return {
+          ...board,
+          columns: [...board.columns, column],
+        };
+      }
+      return board;
     });
+  },
+  async moveBoardTask(params) {
+    if (
+      params.type === "move-task-on-task" &&
+      params.fromTaskID === params.toTaskID
+    )
+      return;
+
+    function foundColumn(columnID: BoardColumnID) {
+      for (const board of boards) {
+        const column = board.columns.find((column) => column.id === columnID);
+        if (column) return column;
+      }
+    }
+
+    const { fromColumnID, toColumnID, fromTaskID } = params;
+
+    const fromColumn = foundColumn(fromColumnID);
+    if (!fromColumn) return;
+
+    const toColumn = foundColumn(toColumnID);
+    if (!toColumn) return;
+
+    const fromTaskIndex = fromColumn.tasks.findIndex(
+      (task) => task.id === fromTaskID,
+    );
+    if (fromTaskIndex === -1) return;
+
+    if (params.type === "move-to-column") {
+      const task = fromColumn.tasks.splice(fromTaskIndex, 1)[0];
+      toColumn.tasks.push(task);
+    } else if (params.type === "move-task-on-task") {
+      const { toTaskID, moveTaskBefore } = params;
+      const toTaskIndex = toColumn.tasks.findIndex(
+        (task) => task.id === toTaskID,
+      );
+      if (toTaskIndex === -1) return;
+
+      const task = fromColumn.tasks.splice(fromTaskIndex, 1)[0];
+      const insertIndex = moveTaskBefore ? toTaskIndex : toTaskIndex + 1;
+      toColumn.tasks.splice(insertIndex, 0, task);
+    }
   },
 };

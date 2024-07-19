@@ -4,6 +4,7 @@ import type {
   BoardColumn,
   BoardID,
   Boards,
+  MoveBoardTaskParams,
 } from "~/repositories/boardsRepository";
 
 export const useBoardsStore = defineStore("boardsStore", () => {
@@ -20,9 +21,15 @@ export const useBoardsStore = defineStore("boardsStore", () => {
     return syncBoards();
   }
 
+  const moveBoardTask = async (params: MoveBoardTaskParams) => {
+    await boardsRepository.moveBoardTask(params);
+    return syncBoards();
+  };
+
   return {
     boards,
     syncBoards,
     createBoardColumn,
+    moveBoardTask,
   };
 });
