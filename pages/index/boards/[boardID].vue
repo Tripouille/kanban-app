@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { safeParse } from "valibot";
 import BoardColumn from "~/components/BoardColumn.vue";
+import CreateBoardColumnInput from "~/components/CreateBoardColumnInput.vue";
 import { boardIDSchema } from "~/repositories/boardsRepository";
 
 const route = useRoute();
@@ -35,6 +36,6 @@ const board = computed(() => boardsStore.boards.find((b) => b.id === boardID));
       :column="column"
       :boardID="board.id"
     />
+    <CreateBoardColumnInput @create-board-column="console.log" />
   </section>
 </template>
-
