@@ -10,10 +10,12 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "0.5.1",
     "@total-typescript/ts-reset": "0.5.1",
     "@types/uuid": "10.0.0",
     "autoprefixer": "10.4.19",
     "nuxt": "3.12.4",
+    "pinia": "2.1.7",
     "postcss": "8.4.39",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.5",
