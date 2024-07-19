@@ -85,6 +85,22 @@ let boards: Boards = v.parse(boardsSchema, [
           },
         ],
       },
+      {
+        id: "bc-87d96361-aff1-4a86-b5af-ece96ef5c5c3",
+        name: "in-progress",
+        tasks: [
+          {
+            id: "bt-f028b1d4-771c-4ce7-a5ad-04137d4a9d61",
+            name: "Clean the kitchen",
+            description: "Use the vacum cleaner again",
+          },
+          {
+            id: "bt-f028b1d4-771c-4ce7-a5ad-04137d4a9d65",
+            name: "Clean the bathroom",
+            description: "Use the vacum cleaner again and again",
+          },
+        ],
+      },
     ],
   },
   {

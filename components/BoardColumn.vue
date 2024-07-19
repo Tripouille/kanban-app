@@ -9,7 +9,7 @@ const { column } = toRefs(props);
 </script>
 
 <template>
-  <section class="flex min-w-36 flex-col gap-4 rounded-sm bg-white px-6 py-4">
+  <section class="flex w-60 flex-col gap-4 rounded-sm bg-white px-6 py-4">
     <h2 class="text-xl font-extrabold uppercase">
       {{ column.name }}
     </h2>
